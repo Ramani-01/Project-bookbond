@@ -1,0 +1,439 @@
+/* Apply the background image globally */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap');
+
+body {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("https://booksrun.com/blog/wp-content/uploads/2024/11/The-most-anticipated-books-2025.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+}
+
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+/* Navbar styles */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar .links {
+    list-style-type: none;
+    display: flex;
+    gap: 30px;  /* Reduced gap between links */
+    color: white;
+    font-size: medium;
+}
+
+.navbar ul li {
+    font-size: 18px; /* Slightly reduced font size */
+    padding: 8px 16px;
+    font-weight: 700;
+}
+
+.navbar ul li:hover {
+    background-color: #E50914;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.1s;
+    padding: 8px 12px;
+}
+
+a {
+    color: white !important;
+    text-decoration: none !important;
+}
+
+/* Logo */
+.logo {
+    height: 150px;
+    width: 180px;
+}
+
+/* Slogan section */
+.slogan {
+    margin-top: 2rem;  /* Reduced top margin */
+}
+
+.slogan p {
+    font-size: 36px; /* Slightly smaller text */
+    font-weight: bold;
+    color: white;
+    text-align: left;
+    margin-left: 27px; /* Reduced left margin */
+}
+
+.slogan h6 {
+    color: white; /* text-white */
+    font-weight: 300; /* font-thin */
+    margin-top: 1.5rem; /* mt-6 (6 * 4px = 24px) */
+    font-size: 18px; /* Adjust font size for readability */
+    text-align: left;
+    margin-left: 27px;
+}
+
+/* Play button */
+.play-button {
+    margin-top: 15px; /* Reduced space above */
+    background-color: #9333ea;
+    color: white;
+    padding: 8px 30px; /* Slightly smaller padding */
+    border-radius: 999px;
+    width: 120px; /* Slightly smaller width */
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    margin-left: 27px; /* Reduced left margin */
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Hover Effect */
+.play-button:hover {
+    transform: scale(1.15); /* Smaller scale effect */
+}
+
+.new-release {
+    margin-top: 2.5rem; /* Equivalent to mt-10 */
+    padding-left: 1.25rem; /* Equivalent to px-5 */
+    padding-right: 1.25rem;
+}
+
+.new-release p {
+    color: white; /* Equivalent to text-white */
+    font-size: 20px; /* Equivalent to text-[20px] */
+    font-weight: bold; /* Equivalent to font-bold */
+}
+
+/* Scrollable container */
+.scroll-container {
+    width: 100%;
+    padding: 20px; /* Equivalent to py-5 px-5 */
+    overflow-x: auto; /* Enables horizontal scrolling */
+    white-space: nowrap; /* Prevents items from wrapping */
+    scroll-behavior: smooth; /* Enables smooth scrolling */
+    display: flex;
+    gap: 15px; /* Space between books */
+    scroll-snap-type: x mandatory; /* Enables snapping */
+}
+
+/* Hide scrollbar */
+.scroll-container::-webkit-scrollbar {
+    display: none; /* Hides scrollbar for WebKit browsers */
+}
+
+/* Book container */
+.book-container {
+    display: flex;
+    gap: 15px; /* Space between books */
+}
+
+/* Individual book item */
+.book-container div {
+    display: inline-block;
+    scroll-snap-align: center; /* Ensures images snap to the center */
+}
+
+/* Book image */
+.book-image {
+    width: 130px;
+    height: 200px;
+    object-fit: cover; /* Ensures the image maintains aspect ratio */
+    border-radius: 5px; /* Optional: Slight rounding */
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Hover effect for book images */
+.book-image:hover {
+    transform: scale(1.1); /* Slight zoom-in effect */
+}
+
+.imgStyle {
+    width: 130px;
+    height: auto; /* Maintain aspect ratio */
+    transition: all 0.5s ease-in-out;
+    border-radius: 8px; /* Approximation for rounded-2xl */
+    object-fit: cover;
+    cursor: pointer;
+}
+
+@media (min-width: 768px) { /* For md screens */
+    .imgStyle {
+        width: 160px;
+        height: 248px;
+    }
+}
+
+
+
+/* Hover Effect */
+.imgStyle:hover {
+    transform: scale(1.25);
+}
+/* General Authentication Page */
+.auth-page {
+    font-family: Arial, sans-serif;
+    background-color: #f7f4ed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  
+  /* Logo Section */
+  .auth-logo-container {
+    position: absolute;
+    top: -17px;
+    left: 250px;
+  }
+  
+  .auth-logo {
+    width: 100px;
+  }
+  
+  /* Login Box */
+  .auth-box {
+    display: flex;
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    width: 60%;
+  }
+  
+  /* Form Section */
+  .auth-form-section {
+    width: 50%;
+    padding: 1.5rem;
+  }
+  
+  .auth-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  /* Input Fields */
+  .auth-input-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    border-radius: 5px;
+    background: white;
+  }
+  
+  .auth-input-field {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+  }
+  
+  .input-icon {
+    margin-right: 0.5rem;
+    color: #666;
+  }
+  
+  /* Error Message */
+  .auth-error-message {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 1rem;
+  }
+  
+  /* Remember Me */
+  .auth-remember-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .auth-checkbox {
+    margin-right: 0.5rem;
+  }
+  
+  .auth-label {
+    font-size: 14px;
+    color: #555;
+  }
+  
+  /* Login Button */
+  .auth-button {
+    width: 100%;
+    background: #2563eb;
+    color: white;
+    padding: 0.7rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .auth-button:hover {
+    background: #1e40af;
+  }
+  
+  /* Links */
+  .auth-links {
+    text-align: center;
+    margin-top: 1rem;
+  }
+  
+  .auth-link {
+    color: #2563eb;
+    text-decoration: none;
+  }
+  
+  .auth-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* Illustration Section */
+  .auth-illustration-container {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .auth-illustration-image {
+    max-width: 70%;
+    border-radius: 10px;
+  }
+  
+
+  .BelowSection {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+  
+  /* Row Layout */
+  .content-row {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    max-width: 1200px;
+    margin-bottom: 50px;
+    position: relative;
+  }
+  
+  /* Left Side - Image */
+  .image-left {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    align-items: left;
+    width:max-content;
+  }
+  
+  .Img_belowsection {
+    width: 340px; /* Increased size slightly */
+    height: auto;
+  }
+  
+  /* Right Side - Text */
+  .text-right {
+    flex: 1;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    padding-right: 40px; 
+    right: auto;
+  }
+  
+
+  /* Adjusting Text Size */
+  .text-right h2 {
+    font-size: 5vw;  /* "GET READY" is larger */
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .text-right h4 {
+    font-size: 3vw; /* "To Escape into Books!" is smaller */
+    font-weight: normal;
+  }
+  
+  /* Space After First Row */
+  .spacer {
+    height: 40px;
+  }
+  
+  /* Second Row - Left Aligned */
+  .content-left {
+    width: 80%;
+    max-width: 1200px;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 0 50px; /* Equal space on left and right */
+  }
+  
+  /* Ensuring Equal Border Spacing */
+  @media (max-width: 768px) {
+    .content-row {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .text-right {
+      text-align: center;
+    }
+  }
+  
+
+  /* Footer styles */
+
+  footer {
+    background-color: black;
+    padding: 20px 0;
+    font-size: 14px;
+    color: white;
+    align-items: center;
+    text-align: center;
+  }
+  
+  footer .container {
+    max-width: 1100px;
+    margin: auto;
+  }
+  
+  footer a {
+    text-decoration: none;
+    color: #6c757d;
+    transition: color 0.3s ease-in-out;
+  }
+  
+  footer a:hover {
+    color: #007bff;
+  }
+  
+  footer .btn {
+    border: none;
+    font-size: 18px;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  footer .btn:hover {
+    transform: scale(1.1);
+  }
+  
+  footer .text-center {
+    background-color: rgba(0, 0, 0, 0.05);
+    padding: 15px;
+  }
+
+  
