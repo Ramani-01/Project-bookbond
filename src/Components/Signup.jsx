@@ -10,49 +10,55 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate()
+  const [success, setSuccess] = useState("");
+  const navigate = useNavigate();
 
-  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.(com|org)$/.test(email);
   const validatePassword = (password) => password.length >= 6;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
+    // Field validation
     if (!username || !email || !password || !confirmPassword) {
       setError("Please fill in all fields.");
       return;
     }
-    
+
     if (!validateEmail(email)) {
-      setError("Invalid email format.");
+      setError("Invalid email. Only .com and .org domains are allowed.");
       return;
     }
-    
+
     if (!validatePassword(password)) {
       setError("Password must be at least 6 characters long.");
       return;
     }
-    
+
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
 
-    setError("");
+      setError(""); // Clear any previous errors
+    setSuccess(""); // Clear previous success message
 
     try {
       const response = await axios.post("http://localhost:3001/users", {
-        name: username, // ✅ Changed `username` to `name` (matches backend model)
+        name: username, 
         email,
-        password,
-        confirmpassword: confirmPassword
+        password
       });
+
       console.log("Signup success:", response.data);
-      alert("Signup successful!");
-      navigate('/login')
+      setSuccess("Signup successful! Redirecting to login...");
+      
+      // Redirect after 2 seconds
+      setTimeout(() => navigate('/login'), 1500);
+      
     } catch (error) {
-      console.error("Signup error:", error);
-      setError("Error signing up. Please try again.");
+      console.error("Signup error:", error.response?.data || error.message);
+      setError(error.response?.data?.message || "Error signing up. Please try again.");
     }
   };
 
@@ -64,7 +70,10 @@ const Signup = () => {
       <div className="auth-box signup-box">
         <div className="auth-form-section signup-form">
           <h2 className="auth-title signup-title">Sign Up</h2>
+          
           {error && <p className="auth-error-message">{error}</p>}
+          {success && <p className="auth-success-message">{success}</p>}
+
           <form onSubmit={handleSubmit}>
             <div className="auth-input-group input-container">
               <i className="fas fa-user input-icon"></i>

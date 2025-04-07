@@ -4,6 +4,7 @@ import BookList from "./BookList";
 import { NavLink } from "react-router-dom";
 import BelowSection from "./BelowSection";
 import Footer from "./Footer";
+import homeLanding from "./Home/HomeLanding";
 
 function Header() {
   return (
@@ -19,10 +20,10 @@ function Header() {
           <img src={logo} alt="Logo" className="logo" />
           <ul className="links">
             {[
-              { name: "Login", path: "/Login" }, // ✅ Path matches `Login.jsx`
-              { name: "MyBooks", path: "/mybooks" },
-              { name: "Community", path: "/community" },
-              { name: "About Us", path: "/AboutUs" }
+              { name: "MyBooks", path: "/mybooks" }, // ✅ Path matches `Login.jsx`
+              { name: "Challenge", path: "/challenge" },
+              { name: "About Us", path: "/About Us" },
+              { name: "Log out", path: "/homeLanding" }
             ].map((item, index) => (
               <li key={index} className="cursor-pointer">
                 <NavLink
