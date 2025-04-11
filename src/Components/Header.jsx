@@ -5,6 +5,7 @@ import { NavLink } from "react-router-dom";
 import BelowSection from "./BelowSection";
 import Footer from "./Footer";
 import homeLanding from "./Home/HomeLanding";
+import Genres from "./DashBoard/Genres";
 
 function Header() {
   return (
@@ -46,12 +47,9 @@ function Header() {
       <button className="play-button">Explore</button>
     </div>
     <BookList/>
-   <div>
-    <BelowSection/>
-   </div>
-   <div>
+   {/* <div>
     <Footer/>
-   </div>
+   </div> */}
     </div>
   );
 }

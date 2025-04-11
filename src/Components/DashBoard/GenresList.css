@@ -1,0 +1,27 @@
+.genreslist{
+    width:200%;
+    height: 50%;
+    padding:50px;
+    border: 2px solid gray;
+    box-sizing: border-box;
+    border-radius: 25px;
+}
+
+.row-container{
+    display: grid;
+    gap: 10px;
+    align-content: flex-end;
+    grid-template-columns: 1fr 1fr 1fr;
+    align-items: start;
+    justify-content: space-between;
+}
+
+table{
+   margin: auto;
+}
+
+td {
+    display: flex;
+    align-items: center; /* Align image and text vertically */
+    gap: 10px; /* Add some space between them */
+}
