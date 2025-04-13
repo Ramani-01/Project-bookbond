@@ -8,6 +8,7 @@ function Genres(){
             <div>
             <Header/>
             </div>
+            <div style={{ margin: "70px 0" }}></div> 
             <div>
             <GenresList/>
             </div>

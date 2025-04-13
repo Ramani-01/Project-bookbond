@@ -9,7 +9,7 @@ import Genres from "./DashBoard/Genres";
 
 function Header() {
   return (
-    <div>
+    <div className="header-background">
     <header className="absolute top-0 left-0 w-full flex items-center justify-between px-12 py-4">
       {/* Logo */}
       {/* <img src={logo} alt="BookBond Logo" className="" /> */}

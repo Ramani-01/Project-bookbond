@@ -1,0 +1,15 @@
+.book-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .book-card {
+    width: 150px;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-align: center;
+  }
+  
