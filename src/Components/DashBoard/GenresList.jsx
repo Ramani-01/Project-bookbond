@@ -41,7 +41,7 @@ function GenresList(){
                             <img src = {Romance} alt ="Romance" width={50}/>Romance</td>
                         <td className="genreslist" onClick={() => onGenreSelect("Fiction")}>
                             <img src= {Fiction} alt = "Fiction" width ={50}/>Fiction</td>
-                        <td className="genreslist" onClick={() => onGenreSelect("Children")}> 
+                        <td className="genreslist" onClick={() => onGenreSelect("children")}> 
                             <img src = {Children} alt ="Children" width = "50"/>
                         Children's</td>
                 </tr>

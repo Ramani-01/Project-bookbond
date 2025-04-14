@@ -1,15 +1,92 @@
 .book-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    padding: 1rem;
-  }
-  
-  .book-card {
-    width: 150px;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    text-align: center;
-  }
-  
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  padding: 1rem;
+  align-items: center;
+  text-align: left;
+}
+
+.book-card {
+  left: 10%;
+  position: relative;
+  align-items: flex-start; 
+  display: flex;
+  width: 580px;
+  height: 195px;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 9px;
+  text-align: center;
+  justify-content: space-between;
+  overflow: hidden; /* important to keep rounded corners clean */
+}
+.pdf-link {
+  padding: 5px 10px;
+  background-color: #3b3b3b;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  min-width: 100px;
+  min-height: 30px;
+  text-align: center;
+}
+
+
+.book-info {
+  flex: 1;
+  padding-top: 0.5rem;
+}
+
+.book-info h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.book-info p {
+  margin: 0.2rem 0;
+  color: #444;
+}
+
+.not-available {
+  color: #cc0000;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.load-more-btn {
+  margin: 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.load-more-btn:disabled {
+  background-color: #888;
+  cursor: not-allowed;
+}
+
+.book-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  gap: 0.5rem;
+}
+
+.button-group {
+  margin-top: 0.5rem;
+  display: flex;
+  gap: 0.5rem; /* adds space between the two buttons */
+  flex-wrap: wrap; /* lets them wrap on small screens */
+  align-items: center;
+  justify-content: center;
+}
