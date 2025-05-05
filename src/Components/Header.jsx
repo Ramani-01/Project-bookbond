@@ -2,10 +2,12 @@ import React from "react";
 import logo from "../assets/Logo_Bookbond.png"; // ✅ Import the logo
 import BookList from "./BookList";
 import { NavLink } from "react-router-dom";
+
 import BelowSection from "./BelowSection";
 import Footer from "./Footer";
 import homeLanding from "./Home/HomeLanding";
 import Genres from "./DashBoard/Genres";
+
 
 function Header() {
   return (
@@ -21,10 +23,11 @@ function Header() {
           <img src={logo} alt="Logo" className="logo" />
           <ul className="links">
             {[
-              { name: "MyBooks", path: "/mybooks" }, // ✅ Path matches `Login.jsx`
+              { name: "MyLibrary", path: "/MyLibrary" }, // ✅ Path matches `Login.jsx`
               { name: "Challenge", path: "/challenge" },
               { name: "About Us", path: "/About Us" },
-              { name: "Log out", path: "/homeLanding" }
+              { name: "MyLibrary", path: "/mylibrary" } // 👈 lowercase to match your route
+
             ].map((item, index) => (
               <li key={index} className="cursor-pointer">
                 <NavLink

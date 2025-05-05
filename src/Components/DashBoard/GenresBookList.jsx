@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./GenresBookList.css";
+import { toast } from "react-toastify";
 
 function GenresBookList({ genre }) {
   const [books, setBooks] = useState([]);
   const [startIndex, setStartIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [addedBooks, setAddedBooks] = useState({});
+
+
 
   useEffect(() => {
     setBooks([]);
@@ -43,8 +47,54 @@ function GenresBookList({ genre }) {
     setStartIndex((prevIndex) => prevIndex + 30);
   };
 
+  const handleWantToRead = async (book) => {
+    try {
+      const payload = {
+        title: book.volumeInfo.title,
+        coverImage: book.volumeInfo.imageLinks?.thumbnail || "",
+      };
+  
+      const res = await fetch('http://localhost:3001/api/books', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      if (res.ok) {
+        const data = await res.json();
+        toast.success("Added to your library!");
+        setAddedBooks(prev => ({ ...prev, [book.id]: true }));
+      } else {
+        console.error('❌ Failed to add book');
+      }
+    } catch (err) {
+      console.error('❌ Error adding book:', err);
+    }
+  };
+  
+
   return (
     <div className="book-list">
+      {books.length === 0 && loading && (
+        <>
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="skeleton-card">
+              <div className="skeleton-thumbnail"></div>
+              <div className="skeleton-content">
+                <div className="skeleton-line"></div>
+                <div className="skeleton-line"></div>
+                <div className="skeleton-line" style={{ width: "60%" }}></div>
+              </div>
+            </div>
+          ))}
+        </>
+      )
+      
+      }
+
+      
       {books.length > 0 ? (
         <>
           {books.map((book) => (
@@ -84,7 +134,14 @@ function GenresBookList({ genre }) {
            ) : (
              <span className="not-available">PDF Not Available</span>
            )}
-           <a className="pdf-link" href="#">Want to Read</a>
+          <button
+            className={`pdf-link ${addedBooks[book.id] ? 'added' : ''}`}
+            onClick={() => handleWantToRead(book)}
+            disabled={addedBooks[book.id]} // disable after added
+          >
+            {addedBooks[book.id] ? 'Added' : 'Want to Read'}
+          </button>
+
          </div>
        </div>
      </div>

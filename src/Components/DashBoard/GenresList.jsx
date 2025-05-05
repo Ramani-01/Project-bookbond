@@ -1,5 +1,5 @@
 import React from "react";
-import "./GenresList.css";
+// import "./GenresList.css";
 import Biography from "./../../assets/GenresListImg/biography.png";
 import Children from "./../../assets/GenresListImg/children's.png";
 import Fiction from "./../../assets/GenresListImg/Fiction.png";
@@ -21,6 +21,7 @@ function GenresList(){
     return(
         <div>
             <div className="List-container">
+                <h2>Genres</h2>
                <table>
                 <tbody>
                 <tr className="row-container">        
