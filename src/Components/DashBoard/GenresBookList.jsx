@@ -1,3 +1,4 @@
+// GenresBookList.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./GenresBookList.css";
@@ -9,8 +10,6 @@ function GenresBookList({ genre }) {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [addedBooks, setAddedBooks] = useState({});
-
-
 
   useEffect(() => {
     setBooks([]);
@@ -26,8 +25,6 @@ function GenresBookList({ genre }) {
           `https://www.googleapis.com/books/v1/volumes?q=subject:${genre}&startIndex=${startIndex}&maxResults=30`
         );
         const allBooks = res.data.items || [];
-
-        // Do NOT filter out books without PDFs
         setBooks((prevBooks) => [...prevBooks, ...allBooks]);
 
         if (allBooks.length < 30) {
@@ -53,7 +50,7 @@ function GenresBookList({ genre }) {
         title: book.volumeInfo.title,
         coverImage: book.volumeInfo.imageLinks?.thumbnail || "",
       };
-  
+
       const res = await fetch('http://localhost:3001/api/books', {
         method: 'POST',
         headers: {
@@ -61,7 +58,7 @@ function GenresBookList({ genre }) {
         },
         body: JSON.stringify(payload),
       });
-  
+
       if (res.ok) {
         const data = await res.json();
         toast.success("Added to your library!");
@@ -73,94 +70,114 @@ function GenresBookList({ genre }) {
       console.error('❌ Error adding book:', err);
     }
   };
-  
 
   return (
-    <div className="book-list">
-      {books.length === 0 && loading && (
-        <>
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="skeleton-card">
-              <div className="skeleton-thumbnail"></div>
-              <div className="skeleton-content">
-                <div className="skeleton-line"></div>
-                <div className="skeleton-line"></div>
-                <div className="skeleton-line" style={{ width: "60%" }}></div>
+    <div className="genres-book-container">
+      <h2 className="genre-title">{genre} Books</h2>
+      
+      <div className="book-list">
+        {books.length === 0 && loading && (
+          <>
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="skeleton-card">
+                <div className="skeleton-thumbnail"></div>
+                <div className="skeleton-content">
+                  <div className="skeleton-line"></div>
+                  <div className="skeleton-line"></div>
+                  <div className="skeleton-line" style={{ width: "60%" }}></div>
+                </div>
               </div>
-            </div>
-          ))}
-        </>
-      )
-      
-      }
+            ))}
+          </>
+        )}
 
-      
-      {books.length > 0 ? (
-        <>
-          {books.map((book) => (
-       <div key={book.id} className="book-card">
-       <img
-         src={book.volumeInfo.imageLinks?.thumbnail}
-         alt={book.volumeInfo.title}
-         width="100"
-       />
-     
-       <div className="book-content">
-         <div className="book-info">
-           <h4>{book.volumeInfo.title}</h4>
-           <p>
-             <em><b>by:</b></em>{" "}
-             {book.volumeInfo.authors?.join(", ") || "Unknown Author"}
-           </p>
-           <p>
-             <em><b>Publisher:</b></em> {book.volumeInfo.publisher || "N/A"}
-           </p>
-           <p>
-             <em><b>Published Date:</b></em>{" "}
-             {book.volumeInfo.publishedDate || "N/A"}
-           </p>
-         </div>
-     
-         <div className="button-group">
-           {book.accessInfo?.pdf?.isAvailable && book.accessInfo?.pdf?.acsTokenLink ? (
-             <a
-               href={book.accessInfo.pdf.acsTokenLink}
-               target="_blank"
-               rel="noopener noreferrer"
-               className="pdf-link"
-             >
-               📄 View PDF
-             </a>
-           ) : (
-             <span className="not-available">PDF Not Available</span>
-           )}
-          <button
-            className={`pdf-link ${addedBooks[book.id] ? 'added' : ''}`}
-            onClick={() => handleWantToRead(book)}
-            disabled={addedBooks[book.id]} // disable after added
-          >
-            {addedBooks[book.id] ? 'Added' : 'Want to Read'}
-          </button>
+        {books.length > 0 ? (
+          <>
+            {books.map((book) => (
+              <div key={book.id} className="book-card">
+                <div className="book-cover">
+                  {book.volumeInfo.imageLinks?.thumbnail ? (
+                    <img
+                      src={book.volumeInfo.imageLinks.thumbnail}
+                      alt={book.volumeInfo.title}
+                    />
+                  ) : (
+                    <div className="book-cover-placeholder">
+                      <i className="fas fa-book"></i>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="book-content">
+                  <div className="book-info">
+                    <h4>{book.volumeInfo.title}</h4>
+                    <p className="book-author">
+                      by {book.volumeInfo.authors?.join(", ") || "Unknown Author"}
+                    </p>
+                    <div className="book-meta">
+                      <span className="publisher">{book.volumeInfo.publisher || "N/A"}</span>
+                      <span className="published-date">{book.volumeInfo.publishedDate || "N/A"}</span>
+                    </div>
+                  </div>
 
-         </div>
-       </div>
-     </div>
-     
-          ))}
+                  <div className="button-group">
+                    {book.accessInfo?.pdf?.isAvailable && book.accessInfo?.pdf?.acsTokenLink ? (
+                      <a
+                        href={book.accessInfo.pdf.acsTokenLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="pdf-link"
+                      >
+                        <i className="fas fa-file-pdf"></i> View PDF
+                      </a>
+                    ) : (
+                      <span className="not-available">
+                        <i className="fas fa-times-circle"></i> PDF Not Available
+                      </span>
+                    )}
+                    
+                    <button
+                      className={`want-to-read-btn ${addedBooks[book.id] ? 'added' : ''}`}
+                      onClick={() => handleWantToRead(book)}
+                      disabled={addedBooks[book.id]}
+                    >
+                      {addedBooks[book.id] ? (
+                        <>
+                          <i className="fas fa-check"></i> Added
+                        </>
+                      ) : (
+                        <>
+                          <i className="fas fa-plus"></i> Want to Read
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
 
-          {hasMore && (
-            <button
-              onClick={loadMore}
-              disabled={loading}
-              className="load-more-btn"
-            >
-              {loading ? "Loading..." : "Load More"}
-            </button>
-          )}
-        </>
-      ) : (
-        <p>Loading or no results for "{genre}"</p>
-      )}
+            {hasMore && (
+              <button
+                onClick={loadMore}
+                disabled={loading}
+                className="load-more-btn"
+              >
+                {loading ? (
+                  <>
+                    <i className="fas fa-spinner fa-spin"></i> Loading...
+                  </>
+                ) : (
+                  <>
+                    <i className="fas fa-arrow-down"></i> Load More
+                  </>
+                )}
+              </button>
+            )}
+          </>
+        ) : (
+          !loading && <p className="no-results">No results found for "{genre}"</p>
+        )}
+      </div>
     </div>
   );
 }

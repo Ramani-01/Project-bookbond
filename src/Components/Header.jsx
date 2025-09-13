@@ -2,7 +2,7 @@ import React from "react";
 import logo from "../assets/Logo_Bookbond.png"; // ✅ Import the logo
 import BookList from "./BookList";
 import { NavLink } from "react-router-dom";
-
+import Challenge from "./Home/Challenge";
 import BelowSection from "./BelowSection";
 import Footer from "./Footer";
 import homeLanding from "./Home/HomeLanding";
@@ -26,7 +26,7 @@ function Header() {
               { name: "MyLibrary", path: "/MyLibrary" }, // ✅ Path matches `Login.jsx`
               { name: "Challenge", path: "/challenge" },
               { name: "About Us", path: "/About Us" },
-              { name: "MyLibrary", path: "/mylibrary" } // 👈 lowercase to match your route
+              { name: "Profile", path: "/profile" } // 👈 lowercase to match your route
 
             ].map((item, index) => (
               <li key={index} className="cursor-pointer">

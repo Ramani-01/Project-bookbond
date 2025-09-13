@@ -11,143 +11,188 @@ const HomeLanding = () => {
     name: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
 
   const [loginData, setLoginData] = useState({
     email: "",
-    password: ""
+    password: "",
   });
+
+  const [error, setError] = useState("");
+
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const validatePassword = (password) => {
+    return /^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(password);
+  };
 
   const handleRegisterChange = (e) => {
     const { name, value } = e.target;
-    setRegisterData((prev) => ({ ...prev, [name]: value }));
+    setRegisterData((prev) => ({ ...prev, [name]: value.trim() }));
   };
 
   const handleLoginChange = (e) => {
     const { name, value } = e.target;
-    setLoginData((prev) => ({ ...prev, [name]: value }));
+    setLoginData((prev) => ({ ...prev, [name]: value.trim() }));
   };
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    const { name, email, password, confirmPassword } = registerData;
 
-    if (registerData.password !== registerData.confirmPassword) {
-      alert("Passwords do not match");
+    if (!name || name.trim().length < 2) {
+      setError("Please enter a valid name (at least 2 characters)");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setError("Password must be at least 6 characters and contain letters and numbers");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
       return;
     }
 
     try {
       const res = await axios.post("http://localhost:3001/users", {
-        name: registerData.name,
-        email: registerData.email,
-        password: registerData.password,
-        type: "user" // fixed as only user allowed
+        name,
+        email,
+        password,
       });
 
-      if (res.data.success) {
+      if (res.data.message === "User registered successfully") {
+        alert("Registered successfully. Please login.");
         setRegisterData({ name: "", email: "", password: "", confirmPassword: "" });
-        setIsLogin(true); // switch to login after successful signup
+        setIsLogin(true);
       } else {
-        alert(res.data.message);
+        setError(res.data.message);
       }
     } catch (err) {
-      console.log("Registration error:", err);
+      setError(err.response?.data?.message || "Registration failed. Please try again.");
     }
   };
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const res = await axios.post("http://localhost:3001/login", loginData);
+    setError("");
+    const { email, password } = loginData;
 
-      if (res.data.success) {
-        localStorage.setItem("userid", res.data.userId);
+    if (!validateEmail(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    if (!password) {
+      setError("Please enter your password");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "http://localhost:3001/login", 
+        { email, password },
+        { withCredentials: true }
+      );
+
+      if (res.data.message === "Login successful") {
+        localStorage.setItem("userid", res.data.user._id);
+        localStorage.setItem("username", res.data.user.name);
         navigate("/genres");
       } else {
-        alert(res.data.message);
+        setError(res.data.message);
       }
     } catch (err) {
-      console.log("Login error:", err);
+      setError(err.response?.data?.message || "Login failed. Please check your credentials.");
     }
   };
 
   return (
     <div className="home-landing">
-    <div className="home-landing-bg">
-      <div className="form-container">
-        {isLogin ? (
-          <form onSubmit={handleLoginSubmit} className="login-form">
-            
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={loginData.email}
-              onChange={handleLoginChange}
-              required
-            />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={loginData.password}
-              onChange={handleLoginChange}
-              required
-            />
-            <button type="submit">Login</button>
-            <p>
-              Don’t have an account?{" "}
-              <span className="form-toggle" onClick={() => setIsLogin(false)}>
-                Signup
-              </span>
-            </p>
-          </form>
-        ) : (
-          <form onSubmit={handleRegisterSubmit} className="register-form">
-            <input
-              type="text"
-              name="name"
-              placeholder="Name"
-              value={registerData.name}
-              onChange={handleRegisterChange}
-              required
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={registerData.email}
-              onChange={handleRegisterChange}
-              required
-            />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={registerData.password}
-              onChange={handleRegisterChange}
-              required
-            />
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm Password"
-              value={registerData.confirmPassword}
-              onChange={handleRegisterChange}
-              required
-            />
-            <button type="submit">Register</button>
-            <p>
-              Already have an account?{" "}
-              <span className="form-toggle" onClick={() => setIsLogin(true)}>
-                Login
-              </span>
-            </p>
-          </form>
-        )}
+      <div className="home-landing-bg">
+        <div className="form-container">
+          {error && <div className="error-message">{error}</div>}
+          {isLogin ? (
+            <form onSubmit={handleLoginSubmit} className="login-form">
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={loginData.email}
+                onChange={handleLoginChange}
+                required
+              />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={loginData.password}
+                onChange={handleLoginChange}
+                required
+              />
+              <button type="submit">Login</button>
+              <p>
+                Don't have an account?{" "}
+                <span className="form-toggle" onClick={() => setIsLogin(false)}>
+                  Signup
+                </span>
+              </p>
+            </form>
+          ) : (
+            <form onSubmit={handleRegisterSubmit} className="register-form">
+              <input
+                type="text"
+                name="name"
+                placeholder="Name"
+                value={registerData.name}
+                onChange={handleRegisterChange}
+                required
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={registerData.email}
+                onChange={handleRegisterChange}
+                required
+              />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={registerData.password}
+                onChange={handleRegisterChange}
+                required
+              />
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={registerData.confirmPassword}
+                onChange={handleRegisterChange}
+                required
+              />
+              <button type="submit">Register</button>
+              <p>
+                Already have an account?{" "}
+                <span className="form-toggle" onClick={() => setIsLogin(true)}>
+                  Login
+                </span>
+              </p>
+            </form>
+          )}
+        </div>
       </div>
-    </div>
     </div>
   );
 };
