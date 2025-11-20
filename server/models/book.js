@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const bookSchema = new mongoose.Schema({
+const bookSchema = new Schema({
   title: { 
     type: String, 
     required: true,
@@ -31,4 +31,4 @@ const bookSchema = new mongoose.Schema({
 // Index for better search performance
 bookSchema.index({ title: 'text', author: 'text' });
 
-module.exports = mongoose.model("Book", bookSchema);
+export default model("Book", bookSchema);

@@ -44,7 +44,7 @@ const Signup = () => {
     setSuccess(""); // Clear previous success message
 
     try {
-      const response = await axios.post("http://localhost:3001/users", {
+      const response = await axios.post("http://localhost:3001/register", {
         name: username, 
         email,
         password

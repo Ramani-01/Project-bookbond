@@ -65,7 +65,7 @@ const HomeLanding = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:3001/users", {
+      const res = await axios.post("http://localhost:3001/register", {
         name,
         email,
         password,

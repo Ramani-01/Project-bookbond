@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
+import { Schema, model } from "mongoose";
 
-const readingChallengeSchema = new mongoose.Schema({
+const readingChallengeSchema = new Schema({
   user: { 
-    type: mongoose.Schema.Types.ObjectId, 
+    type: Schema.Types.ObjectId, 
     ref: "User", 
     required: true,
     index: true
@@ -44,7 +44,7 @@ const readingChallengeSchema = new mongoose.Schema({
     required: true 
   },
   selectedBooks: [{ 
-    type: mongoose.Schema.Types.ObjectId, 
+    type: Schema.Types.ObjectId, 
     ref: "Book" 
   }],
   progress: { 
@@ -65,4 +65,4 @@ const readingChallengeSchema = new mongoose.Schema({
 readingChallengeSchema.index({ user: 1, status: 1 });
 readingChallengeSchema.index({ endDate: 1 });
 
-module.exports = mongoose.model("ReadingChallenge", readingChallengeSchema);
+export default model("ReadingChallenge", readingChallengeSchema);

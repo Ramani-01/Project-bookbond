@@ -1,16 +1,29 @@
-require("dotenv").config();
+// require("dotenv").config();
+import 'dotenv/config';
 
-const express = require("express");
-const cors = require("cors");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const cookieParser = require("cookie-parser");
-const mongoose = require("mongoose");
+
+// const express = require("express");
+import express from 'express';
+import cors from 'cors';
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
+import mongoose from "mongoose";
+// const cors = require("cors");
+// const bcrypt = require("bcryptjs");
+// const jwt = require("jsonwebtoken");
+// const cookieParser = require("cookie-parser");
+// const mongoose = require("mongoose");
 
 // Models
-const User = require("./models/User");
-const Book = require("./models/Book");
-const ReadingChallenge = require("./models/ReadingChallenge");
+
+// const User = require("./models/User");
+// const Book = require("./models/Book");
+// const ReadingChallenge = require("./models/ReadingChallenge");
+import User from './models/users.js'
+import Book from './models/book.js';
+import ReadingChallenge from './models/reading-challenge.js';
+
 
 const app = express();
 app.use(express.json());
@@ -34,7 +47,7 @@ const PORT = process.env.PORT || 3001;
 
 // MongoDB Connection
 mongoose
-  .connect(process.env.MONGO_URI, {
+  .connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
