@@ -1,4 +1,4 @@
-require("dotenv").config({ path: "./.env" });
+require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
@@ -7,227 +7,319 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 
-const usersModel = require("./models/users");
+// Models
+const User = require("./models/User");
 const Book = require("./models/Book");
-const ReadingChallenge = require('./models/reading-challenge');
-
-const { ObjectId } = mongoose.Types;
+const ReadingChallenge = require("./models/ReadingChallenge");
 
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(cookieParser());
 
-const SECRET_KEY = process.env.SECRET_KEY;
-const MONGODB_URI = process.env.MONGODB_URI;
-const PORT = process.env.PORT || 3001;
+// CORS configuration
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true,
+  })
+);
 
-if (!SECRET_KEY || !MONGODB_URI) {
-    console.error("Missing environment variables! Check .env file.");
-    process.exit(1);
+const SECRET_KEY = process.env.JWT_SECRET;
+if (!SECRET_KEY) {
+  console.error("❌ JWT_SECRET is not defined in environment variables");
+  process.exit(1);
 }
 
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log("✅ Connected to MongoDB"))
-    .catch((err) => {
-        console.error(" MongoDB connection error:", err);
-        process.exit(1);
+const PORT = process.env.PORT || 3001;
+
+// MongoDB Connection
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => console.error("❌ MongoDB Error:", err));
+
+// ================== Middleware for Auth ==================
+function authMiddleware(req, res, next) {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ message: "Authentication required" });
+
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Token expired" });
+    }
+    res.status(403).json({ message: "Invalid token" });
+  }
+}
+
+// ================== AUTH ==================
+
+// Register
+app.post("/register", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    
+    // Validation
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already registered" });
+    }
+
+    const newUser = new User({ name, email, password });
+    await newUser.save();
+
+    res.status(201).json({ 
+      message: "User registered successfully",
+      user: { id: newUser._id, name: newUser.name, email: newUser.email }
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Registration failed", error: err.message });
+  }
+});
+
+// Login
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: "Invalid credentials" });
+
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
+
+    const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: "7d" });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-const authMiddleware = (req, res, next) => {
-    const token = req.cookies.token;
-
-    if (!token) {
-        return res.status(403).json({ message: "Unauthorized" });
-    }
-
-    try {
-        req.user = jwt.verify(token, SECRET_KEY); // This line assigns req.user
-        console.log("Authenticated user:", req.user); // Log after assignment
-        next();
-    } catch (err) {
-        res.status(401).json({ message: "Invalid token" });
-    }
-};
-
-
-/// ✅ Register
-app.post("/users", async (req, res) => {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
-        return res.status(400).json({ message: "All fields are required" });
-    }
-
-    try {
-        const existingUser = await usersModel.findOne({ email });
-        if (existingUser) {
-            return res.status(409).json({ message: "User already exists" });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new usersModel({ name, email, password: hashedPassword });
-        await newUser.save();
-        res.status(201).json({ message: "User registered successfully" });
-    } catch (err) {
-        console.error("Error registering user:", err);
-        res.status(500).json({ message: "Server error during registration" });
-    }
+    res.json({ 
+      message: "Login successful",
+      user: { id: user._id, name: user.name, email: user.email }
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Error logging in", error: err.message });
+  }
 });
 
-// ✅ Login
-app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
-
-    try {
-        const user = await usersModel.findOne({ email });
-        if (!user) {
-            return res.status(401).json({ message: "User not found. Please sign up first." });
-        }
-        console.log("Stored password hash:", user.password);  // Log the stored hashed password
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: "Invalid password." });
-        }
-
-        const token = jwt.sign({ userId: user._id, email: user.email }, SECRET_KEY, { expiresIn: "1h" });
-        res.cookie("token", token, { httpOnly: true, secure: false, sameSite: "lax" });
-        res.json({
-            message: "Login successful",
-            user: { _id: user._id, name: user.name, email: user.email },
-            token
-        });
-    } catch (err) {
-        console.error("Error during login:", err);
-        res.status(500).json({ message: "Server error during login" });
-    }
-});
-// ✅ Profile
-app.get("/profile", authMiddleware, async (req, res) => {
-    const user = await usersModel.findById(req.user.userId).select("-password");
-    if (!user) return res.status(404).json({ message: "User not found" });
-    res.json({ user });
-});
-
-// ✅ Logout
+// Logout
 app.post("/logout", (req, res) => {
-    res.clearCookie("token");
-    res.json({ message: "Logged out successfully" });
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+  });
+  res.json({ message: "Logged out successfully" });
 });
 
-// ✅ Update Profile
-app.put("/profile", authMiddleware, async (req, res) => {
-    const { name, email } = req.body;
-    if (!name || !email) {
-        return res.status(400).json({ message: "Name and Email are required" });
-    }
-
-    try {
-        const updatedUser = await usersModel.findByIdAndUpdate(
-            req.user.userId,
-            { name, email },
-            { new: true, runValidators: true, context: 'query' }
-        ).select("-password");
-
-        if (!updatedUser) {
-            return res.status(404).json({ message: "User not found" });
-        }
-
-        res.json({ message: "Profile updated", user: updatedUser });
-    } catch (err) {
-        console.error("Error updating profile:", err);
-        res.status(500).json({ message: "Server error while updating profile" });
-    }
+// Get current user
+app.get("/me", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching user", error: err.message });
+  }
 });
 
-// ✅ Books
-app.post("/books", async (req, res) => {
-    try {
-        const { title, coverImage } = req.body;
-        const book = new Book({ title, coverImage });
-        await book.save();
-        res.status(201).json(book);
-    } catch (err) {
-        console.error("Error saving book:", err);
-        res.status(500).json({ error: "Failed to save book" });
-    }
-});
+// ================== BOOKS ==================
 
+// Get all books
 app.get("/books", async (req, res) => {
-    try {
-        const books = await Book.find();
-        res.json(books);
-    } catch (err) {
-        console.error("Error fetching books:", err);
-        res.status(500).json({ message: "Error fetching books", error: err.message });
-    }
+  try {
+    const books = await Book.find().sort({ title: 1 });
+    res.json(books);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching books", error: err.message });
+  }
 });
 
-app.delete("/books/:id", async (req, res) => {
-    if (!ObjectId.isValid(req.params.id)) {
-        return res.status(400).json({ error: "Invalid book ID format" });
+// Add book
+app.post("/books", async (req, res) => {
+  try {
+    const { title, author, pages, coverImage, description } = req.body;
+    
+    if (!title || !author || !pages) {
+      return res.status(400).json({ message: "Title, author, and pages are required" });
     }
 
-    try {
-        const book = await Book.findByIdAndDelete(req.params.id);
-        if (!book) return res.status(404).json({ error: "Book not found" });
-        res.status(200).json({ message: "Book deleted successfully" });
-    } catch (err) {
-        console.error("Error deleting book:", err);
-        res.status(500).json({ error: "Failed to delete book", details: err.message });
-    }
+    const book = new Book({ title, author, pages, coverImage, description });
+    await book.save();
+    
+    res.status(201).json(book);
+  } catch (err) {
+    res.status(400).json({ message: "Error adding book", error: err.message });
+  }
 });
 
-// ✅ Create Reading Challenge (FIXED VERSION)
+// ================== CHALLENGES ==================
+
+// Create challenge
 app.post("/reading-challenge", authMiddleware, async (req, res) => {
-    try {
-        const existing = await ReadingChallenge.findOne({ user: req.user.userId });
-        if (existing) {
-            return res.status(400).json({ message: "Challenge already exists" });
-        }
-
-        const startDate = new Date();
-        let endDate = new Date(startDate);
-
-        if (req.body.durationType === "days") {
-            endDate.setDate(endDate.getDate() + req.body.duration);
-        } else if (req.body.durationType === "months") {
-            endDate.setMonth(endDate.getMonth() + req.body.duration);
-        } else if (req.body.durationType === "hours") {
-            endDate.setHours(endDate.getHours() + req.body.duration);
-        }
-
-        const challenge = new ReadingChallenge({
-            user: req.user.userId,
-            durationType: req.body.durationType,
-            duration: req.body.duration,
-            goalType: req.body.goalType,
-            goalValue: req.body.goalValue,
-            startDate,
-            endDate,
-            selectedBooks: req.body.selectedBooks,
-        });
-
-        await challenge.save();
-        res.status(201).json(challenge);
-    } catch (err) {
-        console.error("Error creating challenge:", err.message);
-        res.status(500).json({ message: "Failed to create challenge", error: err.message });
+  try {
+    const { title, durationType, duration, goalType, goalValue, selectedBooks } = req.body;
+    
+    // Validation
+    if (!title || !durationType || !duration || !goalType || !goalValue) {
+      return res.status(400).json({ message: "All fields are required" });
     }
+
+    const startDate = new Date();
+    let endDate = new Date();
+    
+    // Calculate end date based on duration type
+    if (durationType === "days") {
+      endDate.setDate(startDate.getDate() + parseInt(duration));
+    } else if (durationType === "weeks") {
+      endDate.setDate(startDate.getDate() + parseInt(duration) * 7);
+    } else if (durationType === "months") {
+      endDate.setMonth(startDate.getMonth() + parseInt(duration));
+      // Handle cases where the target month has fewer days
+      if (endDate.getDate() !== startDate.getDate()) {
+        endDate.setDate(0); // Set to last day of previous month
+      }
+    }
+
+    const challenge = new ReadingChallenge({
+      user: req.user.userId,
+      title,
+      durationType,
+      duration: parseInt(duration),
+      goalType,
+      goalValue: parseInt(goalValue),
+      startDate,
+      endDate,
+      selectedBooks,
+      progress: 0,
+      status: "active",
+    });
+
+    await challenge.save();
+    
+    // Populate selectedBooks for the response
+    await challenge.populate("selectedBooks");
+    
+    res.status(201).json({ message: "Challenge created successfully", challenge });
+  } catch (err) {
+    res.status(400).json({ message: "Failed to create challenge", error: err.message });
+  }
 });
 
-// ✅ Get Reading Challenge
+// Get all challenges for current user
 app.get("/reading-challenge", authMiddleware, async (req, res) => {
-    try {
-        const challenge = await ReadingChallenge.findOne({ user: req.user.userId }).populate("selectedBooks");
-        res.json(challenge);
-    } catch (err) {
-        console.error("Error fetching challenge:", err);
-        res.status(500).json({ message: "Error fetching challenge" });
-    }
+  try {
+    const now = new Date();
+
+    // Auto-update expired challenges
+    await ReadingChallenge.updateMany(
+      { user: req.user.userId, endDate: { $lt: now }, status: "active" },
+      { $set: { status: "failed" } }
+    );
+
+    const challenges = await ReadingChallenge.find({ user: req.user.userId })
+      .populate("selectedBooks")
+      .sort({ createdAt: -1 });
+
+    res.json(challenges);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching challenges", error: err.message });
+  }
 });
 
-// ✅ Start Server
+// Update progress
+app.patch("/reading-challenge/:id/progress", authMiddleware, async (req, res) => {
+  try {
+    const { progress } = req.body;
+    
+    if (typeof progress !== "number" || progress < 0) {
+      return res.status(400).json({ message: "Valid progress value is required" });
+    }
+
+    const challenge = await ReadingChallenge.findOne({ 
+      _id: req.params.id, 
+      user: req.user.userId 
+    });
+
+    if (!challenge) {
+      return res.status(404).json({ message: "Challenge not found" });
+    }
+
+    challenge.progress = progress;
+
+    if (progress >= challenge.goalValue) {
+      challenge.status = "completed";
+    } else if (challenge.status === "completed") {
+      // If progress decreases below goal, revert to active status
+      challenge.status = "active";
+    }
+
+    await challenge.save();
+    res.json({ message: "Progress updated", challenge });
+  } catch (err) {
+    res.status(400).json({ message: "Failed to update progress", error: err.message });
+  }
+});
+
+// Delete challenge
+app.delete("/reading-challenge/:id", authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const challenge = await ReadingChallenge.findOneAndDelete({ 
+      _id: id, 
+      user: req.user.userId 
+    });
+
+    if (!challenge) {
+      return res.status(404).json({ message: "Challenge not found" });
+    }
+
+    res.json({ message: "Challenge deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete challenge", error: err.message });
+  }
+});
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.status(200).json({ message: "Server is running" });
+});
+
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Something went wrong!" });
+});
+
+// ================== SERVER ==================
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });

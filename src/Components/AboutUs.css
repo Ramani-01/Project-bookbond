@@ -1,0 +1,217 @@
+/* Global reset */
+.about-us * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base styles */
+.about-us {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f9f7f1; /* Parchment-like background */
+  padding-bottom: 2rem;
+}
+
+/* Header Styles */
+.about-us header {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  padding: 2rem 0;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.about-us header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100" opacity="0.05"><text x="50%" y="50%" font-size="18" text-anchor="middle" dominant-baseline="middle" font-family="monospace">📚</text></svg>');
+  opacity: 0.1;
+}
+
+.about-us .logo {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.about-us h1 {
+  font-size: 2.8rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.about-us .tagline {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Main container */
+.about-us .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Section styling */
+.about-us .section {
+  background: white;
+  border-radius: 12px;
+  padding: 2.5rem;
+  margin: 2rem 0;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e8e1d5;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-us .section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+}
+
+.about-us .section-title {
+  color: #2c3e50;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 3px solid #7f8c8d;
+  display: inline-block;
+}
+
+/* Mission section */
+.about-us .mission-statement {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: #34495e;
+  background: linear-gradient(to right, #f8f9fa, #ecf0f1);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #7f8c8d;
+}
+
+/* Values section */
+.about-us .values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.about-us .value-card {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.about-us .value-card:hover {
+  background: white;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.about-us .value-icon {
+  font-size: 2.5rem;
+  color: #7f8c8d;
+  margin-bottom: 1rem;
+}
+
+.about-us .value-title {
+  font-size: 1.3rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+}
+
+/* CTA section */
+.about-us .cta-section {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  border-radius: 12px;
+  margin: 3rem 0;
+}
+
+.about-us .cta-title {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.about-us .cta-button {
+  display: inline-block;
+  padding: 12px 28px;
+  background: white;
+  color: #2c3e50;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.about-us .cta-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  background: #f8f9fa;
+}
+
+/* Footer */
+.about-us footer {
+  text-align: center;
+  padding: 2rem;
+  color: #7f8c8d;
+  margin-top: 3rem;
+}
+
+.about-us .social-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.about-us .social-links a {
+  color: #7f8c8d;
+  font-size: 1.5rem;
+  transition: color 0.3s ease;
+}
+
+.about-us .social-links a:hover {
+  color: #2c3e50;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .about-us .container {
+    padding: 1rem;
+  }
+  
+  .about-us .section {
+    padding: 1.5rem;
+  }
+  
+  .about-us h1 {
+    font-size: 2.2rem;
+  }
+  
+  .about-us .values-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-us .section-title {
+    font-size: 1.5rem;
+  }
+}

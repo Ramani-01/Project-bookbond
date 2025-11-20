@@ -7,7 +7,7 @@ import SelectGenres from "./Components/DashBoard/SelectGenres";
 import MyLibrary from "./Components/Home/MyLibrary";
 import Profile from "./Components/Home/Profile";
 import Challenge from "./Components/Home/Challenge";  
-
+import AboutUs from "./Components/AboutUs";
 import "./App.css";
 import "./style.css";
 import HomeLanding from "./Components/Home/HomeLanding";
@@ -23,6 +23,7 @@ function App() {
           <Route path="/genres" element={<Genres />} /> {/* Genres Page */}
           <Route path="/selectgenres/:genre" element={<SelectGenres />} />
           <Route path="/login" element={<Login />} /> {/* Login Page */}
+          <Route path="/AboutUs" element={<AboutUs/>}/>
           <Route path="/signup" element={<Signup />} />
           <Route path="/mylibrary" element={<MyLibrary />} />
           <Route path="/profile" element={<Profile />} /> {/* Profile Page */}

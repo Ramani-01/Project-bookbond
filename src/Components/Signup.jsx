@@ -40,7 +40,7 @@ const Signup = () => {
       return;
     }
 
-      setError(""); // Clear any previous errors
+    setError(""); // Clear any previous errors
     setSuccess(""); // Clear previous success message
 
     try {

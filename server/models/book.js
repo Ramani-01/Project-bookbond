@@ -1,8 +1,34 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const bookSchema = new mongoose.Schema({
-  title: String,
-  coverImage: String, // store file path or base64
+  title: { 
+    type: String, 
+    required: true,
+    trim: true
+  },
+  author: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  pages: {
+    type: Number,
+    required: true,
+    min: 1
+  },
+  coverImage: {
+    type: String,
+    default: ""
+  },
+  description: {
+    type: String,
+    default: ""
+  }
+}, {
+  timestamps: true
 });
 
-module.exports = mongoose.model('Book', bookSchema);
+// Index for better search performance
+bookSchema.index({ title: 'text', author: 'text' });
+
+module.exports = mongoose.model("Book", bookSchema);
